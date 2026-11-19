@@ -1,4 +1,6 @@
+#if defined(USE_ARDUINO)
 #include "Arduino.h"  // attachInterruptArg, pinMode, digitalRead
+#end // defined(USE_ARDUINO)
 #include <cstdio>
 #include <cstring>
 #include <string>
@@ -18,15 +20,28 @@ void IRAM_ATTR sda_isr(void *arg) {
   reinterpret_cast<EsphomeI2cSniffer *>(arg)->on_sda_edge_();
 }
 
+inline bool readpin( pin ){
+#if defined(USE_ARDUINO)
+    return digitalRead(this->sda_pin_);
+#else
+    return gpio_get_level(this->sda_pin_);
+#endif // defined(USE_ARDUINO)
+}
+
 void EsphomeI2cSniffer::setup() {
-  pinMode(this->scl_pin_, INPUT_PULLUP);
-  pinMode(this->sda_pin_, INPUT_PULLUP);
+  //pinMode(this->scl_pin_, INPUT_PULLUP);
+  //pinMode(this->sda_pin_, INPUT_PULLUP);
 
-  this->last_scl_ = digitalRead(this->scl_pin_);
-  this->last_sda_ = digitalRead(this->sda_pin_);
+  this->last_scl_ = readpin(this->scl_pin_);
+  this->last_sda_ = readpin(this->sda_pin_);
 
+#if defined(USE_ARDUINO)
   attachInterruptArg(this->scl_pin_, scl_isr, this, CHANGE);
   attachInterruptArg(this->sda_pin_, sda_isr, this, CHANGE);
+#else
+  gpio_isr_handler_add(this->scl_pin_, scl_isr, this, CHANGE);
+  gpio_isr_handler_add(this->sda_pin_, sda_isr, this, CHANGE);
+#endif // defined(USE_ARDUINO)
 
   ESP_LOGI(TAG, "I2C sniffer on SDA=%u, SCL=%u", this->sda_pin_, this->scl_pin_);
 }
@@ -38,8 +53,8 @@ void EsphomeI2cSniffer::dump_config() {
 }
 
 void IRAM_ATTR EsphomeI2cSniffer::on_sda_edge_() {
-  bool sda = digitalRead(this->sda_pin_);
-  bool scl = digitalRead(this->scl_pin_);
+  bool sda = readpin(this->sda_pin_);
+  bool scl = readpin(this->scl_pin_);
 
   // START: SDA fällt bei SCL=HIGH
   if (!sda && this->last_sda_ && scl) {
@@ -63,11 +78,11 @@ void IRAM_ATTR EsphomeI2cSniffer::on_sda_edge_() {
 
 void IRAM_ATTR EsphomeI2cSniffer::on_scl_edge_() {
   if (!this->in_transfer_) {
-    this->last_scl_ = digitalRead(this->scl_pin_);
+    this->last_scl_ = readpin(this->scl_pin_);
     return;
   }
 
-  bool scl = digitalRead(this->scl_pin_);
+  bool scl = readpin(this->scl_pin_);
   // Sample auf steigender SCL-Flanke
   if (scl) {
     if (this->ack_phase_) {
@@ -78,7 +93,7 @@ void IRAM_ATTR EsphomeI2cSniffer::on_scl_edge_() {
       return;
     }
 
-    bool sda = digitalRead(this->sda_pin_);
+    bool sda = readpin(this->sda_pin_);
     this->cur_byte_ = (this->cur_byte_ << 1) | (sda ? 1 : 0);
     this->bit_idx_++;
 
