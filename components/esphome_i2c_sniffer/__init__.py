@@ -6,7 +6,6 @@ CONF_ID,
 CONF_SDA,
 CONF_SCL,
 )
-from esphome.components.i2c
 
 # Stellt sicher, dass die zugehörigen C++-Teile eingebunden werden
 AUTO_LOAD = ["sensor", "text_sensor"]
