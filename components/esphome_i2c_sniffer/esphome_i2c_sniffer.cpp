@@ -57,8 +57,8 @@ void EsphomeI2cSniffer::dump_config() {
 }
 
 void IRAM_ATTR EsphomeI2cSniffer::on_sda_edge_() {
-  bool sda = readpin(this->sda_pin_);
-  bool scl = readpin(this->scl_pin_);
+  bool sda = pin_read(this->sda_pin_);
+  bool scl = pin_read(this->scl_pin_);
 
   // START: SDA fällt bei SCL=HIGH
   if (!sda && this->last_sda_ && scl) {
@@ -82,11 +82,11 @@ void IRAM_ATTR EsphomeI2cSniffer::on_sda_edge_() {
 
 void IRAM_ATTR EsphomeI2cSniffer::on_scl_edge_() {
   if (!this->in_transfer_) {
-    this->last_scl_ = readpin(this->scl_pin_);
+    this->last_scl_ = pin_read(this->scl_pin_);
     return;
   }
 
-  bool scl = readpin(this->scl_pin_);
+  bool scl = pin_read(this->scl_pin_);
   // Sample auf steigender SCL-Flanke
   if (scl) {
     if (this->ack_phase_) {
@@ -97,7 +97,7 @@ void IRAM_ATTR EsphomeI2cSniffer::on_scl_edge_() {
       return;
     }
 
-    bool sda = readpin(this->sda_pin_);
+    bool sda = pin_read(this->sda_pin_);
     this->cur_byte_ = (this->cur_byte_ << 1) | (sda ? 1 : 0);
     this->bit_idx_++;
 
