@@ -1,6 +1,6 @@
 #if defined(USE_ARDUINO)
 #include "Arduino.h"  // attachInterruptArg, pinMode, digitalRead
-#end // defined(USE_ARDUINO)
+#endif // defined(USE_ARDUINO)
 #include <cstdio>
 #include <cstring>
 #include <string>
