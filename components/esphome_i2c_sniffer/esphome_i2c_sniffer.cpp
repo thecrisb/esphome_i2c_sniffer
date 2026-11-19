@@ -157,7 +157,7 @@ void EsphomeI2cSniffer::loop() {
 #if defined(USE_ARDUINO)
   noInterrupts();
 #else
-  portENTER_CRITICAL_ISR(&lock_me)
+  portENTER_CRITICAL_ISR(&lock_me);
 #endif // defined(USE_ARDUINO)
   
   if (!this->frame_ready_) {  // evtl. schon von ISR zurückgesetzt
@@ -174,7 +174,7 @@ void EsphomeI2cSniffer::loop() {
 #if defined(USE_ARDUINO)
   interrupts();
 #else
-  portEXIT_CRITICAL_ISR(&lock_me)
+  portEXIT_CRITICAL_ISR(&lock_me);
 #endif // defined(USE_ARDUINO)interrupts();
 
   this->publish_frame_(addr, rw, data_snapshot, len);
