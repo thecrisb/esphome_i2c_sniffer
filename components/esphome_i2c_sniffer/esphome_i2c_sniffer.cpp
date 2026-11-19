@@ -20,7 +20,7 @@ void IRAM_ATTR sda_isr(void *arg) {
   reinterpret_cast<EsphomeI2cSniffer *>(arg)->on_sda_edge_();
 }
 
-inline bool readpin( pin ){
+inline bool pin_read( pin ){
 #if defined(USE_ARDUINO)
     return digitalRead(this->sda_pin_);
 #else
@@ -36,8 +36,8 @@ void EsphomeI2cSniffer::setup() {
   //pinMode(this->scl_pin_, INPUT_PULLUP);
   //pinMode(this->sda_pin_, INPUT_PULLUP);
 
-  this->last_scl_ = readpin(this->scl_pin_);
-  this->last_sda_ = readpin(this->sda_pin_);
+  this->last_scl_ = pin_read(this->scl_pin_);
+  this->last_sda_ = pin_read(this->sda_pin_);
 
 #if defined(USE_ARDUINO)
   attachInterruptArg(this->scl_pin_, scl_isr, this, CHANGE);
