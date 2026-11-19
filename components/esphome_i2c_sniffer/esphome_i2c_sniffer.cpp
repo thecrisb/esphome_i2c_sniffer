@@ -43,8 +43,8 @@ void EsphomeI2cSniffer::setup() {
   attachInterruptArg(this->scl_pin_, scl_isr, this, CHANGE);
   attachInterruptArg(this->sda_pin_, sda_isr, this, CHANGE);
 #else
-  gpio_isr_handler_add(this->scl_pin_, scl_isr, this, CHANGE);
-  gpio_isr_handler_add(this->sda_pin_, sda_isr, this, CHANGE);
+  gpio_isr_handler_add(this->scl_pin_, scl_isr, this);
+  gpio_isr_handler_add(this->sda_pin_, sda_isr, this);
 #endif // defined(USE_ARDUINO)
 
   ESP_LOGI(TAG, "I2C sniffer on SDA=%u, SCL=%u", this->sda_pin_, this->scl_pin_);
