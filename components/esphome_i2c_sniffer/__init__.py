@@ -32,8 +32,8 @@ CONFIG_SCHEMA = cv.Schema(
 
 async def to_code(config):
     var = cg.new_Pvariable(config[CONF_ID])
-    cg.add(var.set_sda_pin(config[CONF_SDA_PIN]))
-    cg.add(var.set_scl_pin(config[CONF_SCL_PIN]))
+    cg.add(var.set_sda_pin(config[CONF_SDA]))
+    cg.add(var.set_scl_pin(config[CONF_SCL]))
 
     if CONF_MSG_SENSOR in config:
         t = await text_sensor.new_text_sensor(config[CONF_MSG_SENSOR])
