@@ -20,11 +20,11 @@ void IRAM_ATTR sda_isr(void *arg) {
   reinterpret_cast<EsphomeI2cSniffer *>(arg)->on_sda_edge_();
 }
 
-inline bool pin_read( pin ){
+inline bool pin_read(uint8_t pin ){
 #if defined(USE_ARDUINO)
-    return digitalRead(this->sda_pin_);
+    return digitalRead(pin);
 #else
-    return gpio_get_level(this->sda_pin_);
+    return gpio_get_level(pin);
 #endif // defined(USE_ARDUINO)
 }
 
