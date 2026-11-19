@@ -1,7 +1,12 @@
 import esphome.codegen as cg
 import esphome.config_validation as cv
 from esphome.components import text_sensor, sensor
-from esphome.const import CONF_ID
+from esphome.const import (
+CONF_ID,
+CONF_SDA,
+CONF_SCL,
+)
+from esphome.components.i2c
 
 # Stellt sicher, dass die zugehörigen C++-Teile eingebunden werden
 AUTO_LOAD = ["sensor", "text_sensor"]
@@ -18,8 +23,8 @@ CONF_LAST_DATA_SENSOR = "last_data_sensor"
 CONFIG_SCHEMA = cv.Schema(
     {
         cv.GenerateID(): cv.declare_id(EsphomeI2cSniffer),
-        cv.Required(CONF_SDA_PIN): cv.uint8_t,
-        cv.Required(CONF_SCL_PIN): cv.uint8_t,
+        cv.Required(CONF_SDA): cv.uint8_t,
+        cv.Required(CONF_SCL): cv.uint8_t,
         cv.Optional(CONF_MSG_SENSOR): text_sensor.text_sensor_schema(),
         cv.Optional(CONF_LAST_ADDRESS_SENSOR): sensor.sensor_schema(accuracy_decimals=0),
         cv.Optional(CONF_LAST_DATA_SENSOR): sensor.sensor_schema(accuracy_decimals=0),
