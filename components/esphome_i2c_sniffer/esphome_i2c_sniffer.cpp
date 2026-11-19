@@ -28,6 +28,10 @@ inline bool readpin( pin ){
 #endif // defined(USE_ARDUINO)
 }
 
+#if !defined(USE_ARDUINO)
+portMUX_TYPE lock_me = portMUX_INITIALIZER_UNLOCKED;
+#endif
+
 void EsphomeI2cSniffer::setup() {
   //pinMode(this->scl_pin_, INPUT_PULLUP);
   //pinMode(this->sda_pin_, INPUT_PULLUP);
@@ -150,7 +154,12 @@ void EsphomeI2cSniffer::loop() {
   bool rw;
   uint8_t data_snapshot[MAX_DATA_];
 
+#if defined(USE_ARDUINO)
   noInterrupts();
+#else
+  portENTER_CRITICAL_ISR(&lock_me)
+#endif // defined(USE_ARDUINO)
+  
   if (!this->frame_ready_) {  // evtl. schon von ISR zurückgesetzt
     interrupts();
     return;
@@ -161,7 +170,12 @@ void EsphomeI2cSniffer::loop() {
   len = this->data_len_;
   if (len > MAX_DATA_) len = MAX_DATA_;
   memcpy(data_snapshot, this->data_, len);
+
+#if defined(USE_ARDUINO)
   interrupts();
+#else
+  portEXIT_CRITICAL_ISR(&lock_me)
+#endif // defined(USE_ARDUINO)interrupts();
 
   this->publish_frame_(addr, rw, data_snapshot, len);
 }
